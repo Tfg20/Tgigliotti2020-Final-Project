@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class ="nav"> 
+        <li class="home"><a href="index.html">Home</a></li>
+        <li class="top"><a  href="top.html">Top 250</a></li>
+        <li class="signup"><a href="signup.html">Sign Up</a></li>
+        <li class="login"><a href="login.html">Log In</a></li>
+      </div>
+      <br>
+<form>
+    <img src="title.png" alt="title" class="center2">       <!--Fields for input-->
+    <div class="container">
+        <h1>Log In</h1>
+        <p>Fill in Email and Password to sign up:</p>
+        <hr>
+        <label for="email"><b>Email</b></label>
+        <input type="text" placeholder="Enter Email" name="email" id="email" required>
+        <label><b>Password</b></label>
+        <input type="password" placeholder="Password" name="psw" id="psw" required>
+        <hr>
+        <button type="button" id="submitData" name="submitData" class="registerbtn">Log In</button>
+    </div>
+    <div class="container signin">
+        <p>Don't have an account? <a href="signup.html">Register</a>.</p>
+    </div>
+</form>
+
+</body>
+</html>
+
+<script type="module">
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";     // Firebase script starts here
+    import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut
+    } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+    import {getDatabase, set, ref, update} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
+    // My firebase information
+    const firebaseConfig = {
+  apiKey: "AIzaSyAhGjTatZc8htnfCx8CPiUkyWEOFHaRDo4",
+  authDomain: "movie-website-86f8d.firebaseapp.com",
+  databaseURL: "https://movie-website-86f8d-default-rtdb.firebaseio.com",
+  projectId: "movie-website-86f8d",
+  storageBucket: "movie-website-86f8d.appspot.com",
+  messagingSenderId: "538841242071",
+  appId: "1:538841242071:web:ccb5965b1eea01dde99392",
+  measurementId: "G-VV7M86Y580"
+};
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const database = getDatabase(app);
+    submitData.addEventListener('click', (e) => {
+        var email = document.getElementById('email').value;
+        var password = document.getElementById('psw').value;
+        // log in user
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in
+                const user = userCredential.user;
+                var lgDate = new Date();
+                update(ref(database, 'users/' + user.uid), {
+                    last_login: lgDate,
+                })
+                    .then(() => {
+                        // Data saved successfully!
+                        alert('user logged in successfully');
+
+                    })
+                    .catch((error) => {
+                        // The write failed...
+                        alert(error);
+                    });
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                alert(errorMessage);
+            });
+
+        //sign out user
+        signOut(auth).then(() => {
+               // Sign-out successful.
+        }).catch((error) => {
+            // An error happened.
+        });
+    });
+
+</script>
